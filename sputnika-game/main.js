@@ -93,7 +93,8 @@ let isDragging = false;  // 행성 드래그
 let isShooting = false;  // 행성 쏘기
 
 const createPlanet = () => {
-  let index = Math.floor(Math.random() * 2);  // 0~2까지 랜덤으로 행성 생성
+  // let index = Math.floor(Math.random() * 2);  // 0~2까지 랜덤으로 행성 생성
+  let index = 1;
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
   shootingPlanet = Bodies.circle(200, 300, planet.radius, {
@@ -234,31 +235,31 @@ Events.on(engine, 'collisionStart', (event) => {
         const index = collision.bodyA.index;
         //행성이 합쳐질때 인덱스에 다라 점수를 추가
         switch (collision.bodyA.index){
-          case 1:
+          case 0:
             gamescore += 1
             break
-          case 2:
+          case 1:
             gamescore += 3
             break
-          case 3:
+          case 2:
             gamescore += 6
             break
-          case 4:
+          case 3:
             gamescore += 10   
             break 
-          case 5:
+          case 4:
             gamescore += 15
             break
-          case 6:
+          case 5:
             gamescore += 21
             break
-          case 7:
+          case 6:
             gamescore += 28
             break
-          case 8:
+          case 7:
             gamescore += 36  
             break 
-          case 9:
+          case 8:
             gamescore += 45  
             break
         }
@@ -269,21 +270,21 @@ Events.on(engine, 'collisionStart', (event) => {
           return;
         }
         World.remove(world, [collision.bodyA, collision.bodyB]);
-        if (fust!=false){
-          if (gamescore>=250){
+        if (fust==false){
+          if (gamescore>=100){
             fust=true;
             timer+=30
           }
           
         }
-        if (sacund!=false){
-          if (sacund>=500){
+        if (sacund==false){
+          if (sacund>=200){
             fust=true;
             timer+=20
           }
         }
-        if (serd!=false){
-          if (serd>=750){
+        if (serd==false){
+          if (serd>=300){
             fust=true;
             timer+=10
           }
