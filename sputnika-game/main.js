@@ -30,31 +30,33 @@ const render = Render.create({
 Render.run(render);  // 렌더 실행
 Runner.run(engine);  // 엔진 실행
 
-const timerDisplay = Bodies.circle(900, 100, 50, {
-  isStatic: true,  // 움직이지 않도록 고정
-  render: {  // 그리기
-    fillStyle: 'white',  // 텍스트 색상
-    text: {
-      content: `Score: ${timemer}`,  // gamescore 변수 출력
-      size: 20,  // 텍스트 크기
-      color: 'white',  // 텍스트 색상
-      weight: 'bold'  // 볼드체
+const UI = {
+  timerDisplay: Bodies.rectangle(900, 100, 100, 50, {  // x좌표 : 900, y좌표 : 100, 너비 : 100, 높이 : 50
+    isStatic: true,  // 움직이지 않도록 고정
+    render: {  // 그리기
+      fillStyle: 'white',  // 텍스트 색상
+      text: {
+        content: `Score: ${timemer}`,  // gamescore 변수 출력
+        size: 20,  // 텍스트 크기
+        color: 'white',  // 텍스트 색상
+        weight: 'bold'  // 볼드체
+      }
     }
-  }
-});
+  }),
+  gamescoreUI: Bodies.rectangle(700, 100, 100, 50, {  // x좌표 : 700, y좌표 : 100, 너비 : 100, 높이 : 50
+    isStatic: true,  // 움직이지 않도록 고정
+    render: {  // 그리기
+      fillStyle: 'white',  // 텍스트 색상
+      text: {
+        content: `Score: ${gamescore}`,  // gamescore 변수 출력
+        size: 20,  // 텍스트 크기
+        color: 'white',  // 텍스트 색상
+        weight: 'bold'  // 볼드체
+      }
+    }
+  })
+};
 
-const gamescoreUI = Bodies.circle(700, 100, 50, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
-  isStatic: true,  // 움직이지 않도록 고정
-  render: {  // 그리기
-    fillStyle: 'white',  // 텍스트 색상
-    text: {
-      content: `Score: ${gamescore}`,  // gamescore 변수 출력
-      size: 20,  // 텍스트 크기
-      color: 'white',  // 텍스트 색상
-      weight: 'bold'  // 볼드체
-    }
-  }
-});
 
 // 중력이 모이는 가운에 원 만들기
 const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
@@ -76,14 +78,12 @@ const ex = Bodies.circle(100, 500, 20, {  // x좌표 : 700, y좌표 : 300, radiu
     lineWidth: 3,  // 선 두께
   }
 });
-
+World.add(world, [UI.timerDisplay, UI.gamescoreUI]);
 World.add(world, [centerGravity,ex]); //[centerGravity, 계속 추가 가능]
-
 //타이머
 const countdown = setInterval(() => {
   timer--;  // 타이머 시간 감소
-  
-  World.add(world, [timerDisplay]);// 업데이트 스코어
+  World.add(world, [UI.timerDisplay]);
 
   // 타이머가 0이 되면 타이머 종료
   if (timer === 0) {
@@ -267,7 +267,7 @@ Events.on(engine, 'collisionStart', (event) => {
             gamescore += 45  
             break
         }
-        World.add(world, [gamescoreUI]);// 업데이트 스코어
+        World.add(world, [UI.gamescoreUI]);// 업데이트 스코어
 
 
         if (index === PLANETS.length - 1) {
