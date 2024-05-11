@@ -6,6 +6,8 @@ import { PLANETS } from "./planets";
 const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
+const gamescore = 0;
+
 engine.gravity.scale = 0;  // 중력의 크기
 
 // 게임 화면 그리기
@@ -22,6 +24,19 @@ const render = Render.create({
 
 Render.run(render);  // 렌더 실행
 Runner.run(engine);  // 엔진 실행
+
+const gamescoreUI = Bodies.circle(900, 100, 50, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
+  isStatic: true,  // 움직이지 않도록 고정
+  render: {  // 그리기
+    fillStyle: 'white',  // 텍스트 색상
+    text: {
+      content: `Score: ${gamescore}`,  // gamescore 변수 출력
+      size: 20,  // 텍스트 크기
+      color: 'white',  // 텍스트 색상
+      weight: 'bold'  // 볼드체
+    }
+  }
+});
 
 // 중력이 모이는 가운에 원 만들기
 const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
@@ -195,6 +210,37 @@ Events.on(engine, 'collisionStart', (event) => {
       // 충돌한 두 물체의 인덱스가 같은 경우에만 다음 행성을 생성하여 추가합니다.
       if (collision.bodyA.index === collision.bodyB.index) {
         const index = collision.bodyA.index;
+
+        //행성이 합쳐질때 인덱스에 다라 점수를 추가
+        switch (collision.bodyA.index){
+          case 1:
+            gamescore += 1
+            break
+          case 2:
+            gamescore += 3
+            break
+          case 3:
+            gamescore += 6
+            break
+          case 4:
+            gamescore += 10   
+            break 
+          case 5:
+            gamescore += 15
+            break
+          case 6:
+            gamescore += 21
+            break
+          case 7:
+            gamescore += 28
+            break
+          case 8:
+            gamescore += 36  
+            break 
+          case 9:
+            gamescore += 45  
+            break
+        }
 
         if (index === PLANETS.length - 1) {
           return;
