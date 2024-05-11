@@ -6,9 +6,9 @@ import { PLANETS } from "./planets";
 const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
-engine.gravity.scale = 0.  // 중력의 크기
+engine.gravity.scale = 0;  // 중력의 크기
 
-// 1. 게임 화면 그리기
+// 게임 화면 그리기
 const render = Render.create({
   element: document.body,  // 어디에 그릴 것인지
   engine: engine,  // 게임 엔진
@@ -23,9 +23,20 @@ const render = Render.create({
 Render.run(render);  // 렌더 실행
 Runner.run(engine);  // 엔진 실행
 
-// 2. 중력이 모이는 가운에 원 만들기
+// 중력이 모이는 가운에 원 만들기
 const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
   isStatic: true,  // 움직이지 않도록 고정
+  // isSensor: true, // 충돌 감지만 가능하도록 설정
+  render: {  // 그리기
+    fillStyle: 'transparent',  // 투명 스타일로 지정
+    strokeStyle: 'white',  // 선 색상
+    lineWidth: 3,  // 선 두께
+  }
+});
+// 남은 로켓의 개수를 표시 기능 
+const ex = Bodies.circle(100, 500, 20, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
+  isStatic: true,  // 움직이지 않도록 고정
+  // isSensor: true, // 충돌 감지만 가능하도록 설정
   render: {  // 그리기
     fillStyle: 'transparent',  // 투명 스타일로 지정
     strokeStyle: 'white',  // 선 색상
@@ -33,18 +44,18 @@ const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 :
   }
 });
 
-World.add(world, [centerGravity]);
+World.add(world, [centerGravity,ex]); //[centerGravity, 계속 추가 가능]
 
 
-// 3. 행성 생성하기
+// 행성 생성하기
 
 let shootingPlanet;  // 플레이어가 쏠 행성
 let isDragging = false;  // 행성 드래그
 let isShooting = false;  // 행성 쏘기
 
 const createPlanet = () => {
-  const index = Math.floor(Math.random() * 2);  // 랜덤으로 행성 생성
-  const planet = PLANETS[index];  // index에는 0~1까지 들어감
+  let index = Math.floor(Math.random() * 2);  // 0~2까지 랜덤으로 행성 생성
+  let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
   shootingPlanet = Bodies.circle(200, 300, planet.radius, {
     index: index,
@@ -57,7 +68,33 @@ const createPlanet = () => {
   World.add(world, shootingPlanet);
 };
 
-// 4. 행성 드래그 이벤트
+
+const createRocket = () => {
+  // 기존 행성이 있으면 제거합니다.
+  if (shootingPlanet) {
+    World.remove(world, shootingPlanet);
+  }
+
+  let index = Math.floor(Math.random() * 1);  // 0~1까지 랜덤으로 행성 생성
+  let planet = PLANETS[index];  // index에는 0~1까지 들어감
+
+  shootingPlanet = Bodies.circle(200, 300, planet.radius, {
+    index: index,
+    isStatic: true,  // 행성 고정
+    render: {
+      sprite: { texture: `./rocket.png` }  // 행성 이미지 경로
+    }
+  });
+
+  World.add(world, shootingPlanet);
+};
+
+window.addEventListener('keydown', (event) => {
+  if ((event.key === 'r' || event.key === 'R') && !isDragging && !isShooting) {
+    createRocket();  // 'r' 키를 눌렀을 때 행성 새로 생성
+  }
+});
+// 행성 드래그 이벤트
 
 // 행성 간의 거리 측정
 window.addEventListener('mousedown', (event) => {
@@ -126,11 +163,11 @@ window.addEventListener('mouseup', (event) => {
 
   setTimeout(() => {
     createPlanet();
-  }, 2000);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
+  }, 2500);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
 });
 
 
-// 5. 만유인력의 법칙
+// 만유인력의 법칙
 
 Events.on(engine, 'beforeUpdate', (event) => {
   const bodies = Composite.allBodies(world);
@@ -148,32 +185,39 @@ Events.on(engine, 'beforeUpdate', (event) => {
 
 Events.on(engine, 'collisionStart', (event) => {
   event.pairs.forEach((collision) => {
-    if (collision.bodyA.index === collision.bodyB.index) {
-      const index = collision.bodyA.index;
+    const textureA = collision.bodyA.render.sprite.texture;  // bodyA의 텍스처
+    const textureB = collision.bodyB.render.sprite.texture;  // bodyB의 텍스처
 
-      if (index === PLANETS.length - 1) {
-        return;
-      }
+    // 충돌한 두 물체 중 하나의 텍스처가 'rocket.png'인 경우 && (!centerGravity)
+    if (textureA === './rocket.png' || textureB === './rocket.png') {
+      World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
+    } else {
+      // 충돌한 두 물체의 인덱스가 같은 경우에만 다음 행성을 생성하여 추가합니다.
+      if (collision.bodyA.index === collision.bodyB.index) {
+        const index = collision.bodyA.index;
 
-      World.remove(world, [collision.bodyA, collision.bodyB]);
-
-      const newPlanet = PLANETS[index + 1];
-
-      const newBody = Bodies.circle(
-        collision.collision.supports[0].x,
-        collision.collision.supports[0].y,
-        newPlanet.radius,
-        {
-          index: index + 1,
-          render: {
-            sprite: { texture: `./${newPlanet.name}.png` }
-          }
+        if (index === PLANETS.length - 1) {
+          return;
         }
-      );
+        World.remove(world, [collision.bodyA, collision.bodyB]);
 
-      World.add(world, newBody);
+        const newPlanet = PLANETS[index + 1];
+
+        const newBody = Bodies.circle(
+          collision.collision.supports[0].x,
+          collision.collision.supports[0].y,
+          newPlanet.radius,
+          {
+            index: index + 1,
+            render: {
+              sprite: { texture: `./${newPlanet.name}.png` }
+            }
+          }
+        );
+
+        World.add(world, newBody);
+      }
     }
   });
 });
-
 createPlanet();
