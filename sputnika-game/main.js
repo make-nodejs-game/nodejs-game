@@ -7,7 +7,7 @@ const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
-let timemer =60; //초기 제한시간
+let timer = 60; // 초기 제한시간
 
 let fust = false;
 let sacund = false;
@@ -70,18 +70,21 @@ const ex = Bodies.circle(100, 500, 20, {  // x좌표 : 700, y좌표 : 300, radiu
     lineWidth: 3,  // 선 두께
   }
 });
+
 scoreElement.textContent = `Score: ${gamescore}`;
+timerElement.textContent = `Timer: ${timer}`; 
 World.add(world, [centerGravity,ex]); //[centerGravity, 계속 추가 가능]
 //타이머
 const countdown = setInterval(() => {
   timer--;  // 타이머 시간 감소
-  timerElement.textContent = `Time: ${timer}`;
+  timerElement.textContent = `Timer: ${timer}`;  // 화면에 타이머 표시
 
   // 타이머가 0이 되면 타이머 종료
   if (timer === 0) {
+    alert("게임오버");
     clearInterval(countdown);
   }
-}, 1000);  // 1초마다 실행
+}, 1000);
 
 // 행성 생성하기
 
@@ -269,20 +272,20 @@ Events.on(engine, 'collisionStart', (event) => {
         if (fust!=false){
           if (gamescore>=250){
             fust=true;
-            timemer+=30
+            timer+=30
           }
           
         }
         if (sacund!=false){
           if (sacund>=500){
             fust=true;
-            timemer+=20
+            timer+=20
           }
         }
         if (serd!=false){
           if (serd>=750){
             fust=true;
-            timemer+=10
+            timer+=10
           }
         }
 
