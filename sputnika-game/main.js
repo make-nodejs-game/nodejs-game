@@ -244,6 +244,8 @@ window.addEventListener('mousemove', (event) => {
   }
 });
 
+// 행성마다 힘의 크기
+const forceMultiplier = [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01];
 
 // 마우스를 떼면 isDragging = false로 한다.
 window.addEventListener('mouseup', (event) => {
@@ -282,9 +284,12 @@ window.addEventListener('mouseup', (event) => {
   };
 
   // 힘을 작용시키는 applyForce 함수
+  // 행성의 인덱스에 따라 다른 힘의 크기를 적용합니다.
+  const index = shootingPlanet.index;
+  const forceMultiplierForPlanet = forceMultiplier[index];
   Body.applyForce(shootingPlanet, shootingPosition, {
-    x: forceDirection.x * 0.0008,  // 뒤에 수치는 힘의 크기 설정
-    y: forceDirection.y * 0.0008  // 뒤에 수치는 힘의 크기 설정
+    x: forceDirection.x * forceMultiplierForPlanet,  
+    y: forceDirection.y * forceMultiplierForPlanet  
   });
 
   isDragging = false;
