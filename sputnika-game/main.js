@@ -15,6 +15,15 @@ let serd = false;
 
 engine.gravity.scale = 0;  // 중력의 크기
 
+//투명도 조절
+var image = new Image();
+image.src = './space.png';
+
+image.onload = function() {
+  context.globalAlpha = 0.5; // 투명도 조절
+  context.drawImage(image, x, y, width, height);
+};
+
 // 게임 화면 그리기
 const render = Render.create({
   element: document.body,  // 어디에 그릴 것인지
@@ -24,6 +33,7 @@ const render = Render.create({
     width: 1000,  
     height: 600,
     wireframes: false,
+    background: './space.png',
   }
 });
 
@@ -48,8 +58,6 @@ timerElement.style.fontSize = '20px';
 timerElement.style.fontWeight = 'bold';
 document.body.appendChild(timerElement);
 
-
-
 // 중력이 모이는 가운에 원 만들기
 const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
   isStatic: true,  // 움직이지 않도록 고정
@@ -60,20 +68,42 @@ const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 :
     lineWidth: 3,  // 선 두께
   }
 });
-// 남은 로켓의 개수를 표시 기능 
-const ex = Bodies.circle(100, 500, 20, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
+
+// 남은 로켓의 개수를 표시 기능
+const ex1 = Bodies.circle(50, 30, 20, {  // x좌표 : 100, y좌표 : 500, radius(반지름) : 20
   isStatic: true,  // 움직이지 않도록 고정
   // isSensor: true, // 충돌 감지만 가능하도록 설정
+  angle: Math.PI / 4,  // 45도 회전
   render: {  // 그리기
-    fillStyle: 'transparent',  // 투명 스타일로 지정
-    strokeStyle: 'white',  // 선 색상
-    lineWidth: 3,  // 선 두께
+    sprite: {
+      texture: 'rocket.png'  // 로켓 이미지 경로
+    }
   }
 });
-
+const ex2 = Bodies.circle(100, 30, 20, {  // x좌표 : 150, y좌표 : 500, radius(반지름) : 20
+  isStatic: true,  // 움직이지 않도록 고정
+  // isSensor: true, // 충돌 감지만 가능하도록 설정
+  angle: Math.PI / 4,  // 45도 회전
+  render: {  // 그리기
+    sprite: {
+      texture: 'rocket.png'  // 로켓 이미지 경로
+    }
+  }
+});
+const ex3 = Bodies.circle(150, 30, 20, {  // x좌표 : 200, y좌표 : 500, radius(반지름) : 20
+  isStatic: true,  // 움직이지 않도록 고정
+  // isSensor: true, // 충돌 감지만 가능하도록 설정
+  angle: Math.PI / 4,  // 45도 회전
+  render: {  // 그리기
+    sprite: {
+      texture: 'rocket.png'  // 로켓 이미지 경로
+    }
+  }
+});
 scoreElement.textContent = `Score: ${gamescore}`;
-timerElement.textContent = `Timer: ${timer}`; 
-World.add(world, [centerGravity,ex]); //[centerGravity, 계속 추가 가능]
+timerElement.textContent = `Timer: ${timer}`;
+World.add(world, [centerGravity,ex1,ex2,ex3]); //[centerGravity, 계속 추가 가능]
+
 //타이머
 const countdown = setInterval(() => {
   timer--;  // 타이머 시간 감소
@@ -93,8 +123,8 @@ let isDragging = false;  // 행성 드래그
 let isShooting = false;  // 행성 쏘기
 
 const createPlanet = () => {
-  // let index = Math.floor(Math.random() * 2);  // 0~2까지 랜덤으로 행성 생성
-  let index = 1;
+  let index = Math.floor(Math.random() * 4);  // 0~2까지 랜덤으로 행성 생성
+  // let index = 7;
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
   shootingPlanet = Bodies.circle(200, 300, planet.radius, {
@@ -104,18 +134,18 @@ const createPlanet = () => {
       sprite: { texture: `./${planet.name}.png` }  // 행성 이미지 경로
     }
   });
-
   World.add(world, shootingPlanet);
 };
 
 
 const createRocket = () => {
+  
   // 기존 행성이 있으면 제거합니다.
   if (shootingPlanet) {
     World.remove(world, shootingPlanet);
   }
 
-  let index = Math.floor(Math.random() * 1);  // 0~1까지 랜덤으로 행성 생성
+  let index = 1;  // 0~1까지 랜덤으로 행성 생성
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
   shootingPlanet = Bodies.circle(200, 300, planet.radius, {
@@ -125,15 +155,38 @@ const createRocket = () => {
       sprite: { texture: `./rocket.png` }  // 행성 이미지 경로
     }
   });
-
   World.add(world, shootingPlanet);
 };
 
+let rKeyPressCount = 0; // "r" 키 입력 횟수 카운터
+let RKeyPressCount = 0; // "R" 키 입력 횟수 카운터
+
+let rockets = [ex1, ex2, ex3]; // 로켓들을 배열에 저장
+
 window.addEventListener('keydown', (event) => {
   if ((event.key === 'r' || event.key === 'R') && !isDragging && !isShooting) {
-    createRocket();  // 'r' 키를 눌렀을 때 행성 새로 생성
+    if (event.key === 'r') {
+      rKeyPressCount++; // "r" 키 입력이면 카운터 증가
+    } else {
+      RKeyPressCount++; // "R" 키 입력이면 카운터 증가
+    }
+
+    if (rKeyPressCount + RKeyPressCount <= 3) { // 카운터가 3 이하인 경우에만 로켓 생성
+      createRocket();  // 'r' 키를 눌렀을 때 행성 새로 생성
+
+      // "r" 및 "R" 키 입력이 1번 입력될 때마다 ex3, ex2, ex1 순서대로 제거
+      if (rKeyPressCount + RKeyPressCount === 1) {
+          World.remove(world, ex3);
+        } else if (rKeyPressCount + RKeyPressCount === 2){
+          World.remove(world, ex2);
+        } else if (rKeyPressCount + RKeyPressCount === 3){
+          World.remove(world, ex1);
+        }
+      }
+    }
   }
-});
+);
+
 // 행성 드래그 이벤트
 
 // 행성 간의 거리 측정
@@ -206,6 +259,7 @@ window.addEventListener('mouseup', (event) => {
   }, 2500);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
 });
 
+
 // 만유인력의 법칙
 Events.on(engine, 'beforeUpdate', (event) => {
   const bodies = Composite.allBodies(world);
@@ -226,14 +280,22 @@ Events.on(engine, 'collisionStart', (event) => {
     const textureA = collision.bodyA.render.sprite.texture;  // bodyA의 텍스처
     const textureB = collision.bodyB.render.sprite.texture;  // bodyB의 텍스처
 
-    // 충돌한 두 물체 중 하나의 텍스처가 'rocket.png'인 경우 && (!centerGravity)
-    if (textureA === './rocket.png' || textureB === './rocket.png') {
+    // 충돌한 두 물체 중 하나의 텍스처가 'rocket.png'이고 다른 하나가 centerGravity가 아닌 경우
+    if (
+      (textureA === './rocket.png' && collision.bodyB !== centerGravity) ||
+      (textureB === './rocket.png' && collision.bodyA !== centerGravity) ||
+      (textureA === './rocket.png' && collision.bodyB !== ex1) &&
+      (textureA === './rocket.png' && collision.bodyB !== ex2) &&
+      (textureA === './rocket.png' && collision.bodyB !== ex3)
+      
+    ) {
       World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
     } else {
       // 충돌한 두 물체의 인덱스가 같은 경우에만 다음 행성을 생성하여 추가합니다.
       if (collision.bodyA.index === collision.bodyB.index) {
         const index = collision.bodyA.index;
-        //행성이 합쳐질때 인덱스에 다라 점수를 추가
+
+        //행성이 합쳐질때 인덱스에 띠라 점수를 추가
         switch (collision.bodyA.index){
           case 0:
             gamescore += 1
@@ -311,3 +373,20 @@ Events.on(engine, 'collisionStart', (event) => {
 });
 
 createPlanet();
+
+
+
+window.addEventListener('keydown', (event) => {
+  if ((event.key === 'r' || event.key === 'R') && !isDragging && !isShooting) {
+    if (event.key === 'r') {
+      rKeyPressCount++; // "r" 키 입력이면 카운터 증가
+    } else {
+      RKeyPressCount++; // "R" 키 입력이면 카운터 증가
+    }
+
+    if (rKeyPressCount + RKeyPressCount <= 3) { // 카운터가 3 이하인 경우에만 로켓 생성
+      createRocket();  // 'r' 키를 눌렀을 때 행성 새로 생성
+      }
+    }
+  }
+);
