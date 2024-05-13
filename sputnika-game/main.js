@@ -372,5 +372,4 @@ Events.on(engine, 'collisionStart', (event) => {
   });
 });
 
-print('추가된 단어2')
 createPlanet();
