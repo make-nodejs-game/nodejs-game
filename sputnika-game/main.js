@@ -371,5 +371,4 @@ Events.on(engine, 'collisionStart', (event) => {
     }
   });
 });
-
 createPlanet();
