@@ -373,20 +373,3 @@ Events.on(engine, 'collisionStart', (event) => {
 });
 
 createPlanet();
-
-
-
-window.addEventListener('keydown', (event) => {
-  if ((event.key === 'r' || event.key === 'R') && !isDragging && !isShooting) {
-    if (event.key === 'r') {
-      rKeyPressCount++; // "r" 키 입력이면 카운터 증가
-    } else {
-      RKeyPressCount++; // "R" 키 입력이면 카운터 증가
-    }
-
-    if (rKeyPressCount + RKeyPressCount <= 3) { // 카운터가 3 이하인 경우에만 로켓 생성
-      createRocket();  // 'r' 키를 눌렀을 때 행성 새로 생성
-      }
-    }
-  }
-);
