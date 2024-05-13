@@ -15,15 +15,6 @@ let serd = false;
 
 engine.gravity.scale = 0;  // 중력의 크기
 
-//투명도 조절
-var image = new Image();
-image.src = './space.png';
-
-image.onload = function() {
-  context.globalAlpha = 0.5; // 투명도 조절
-  context.drawImage(image, x, y, width, height);
-};
-
 // 게임 화면 그리기
 const render = Render.create({
   element: document.body,  // 어디에 그릴 것인지
@@ -57,6 +48,16 @@ timerElement.style.color = 'white';
 timerElement.style.fontSize = '20px';
 timerElement.style.fontWeight = 'bold';
 document.body.appendChild(timerElement);
+
+const circle = Bodies.circle(200, 300, 100, {
+  isStatic: true,
+  isSensor: true,
+  render: {
+    fillStyle: 'rgba(255, 255, 255, 0.2)', // 투명도 조절
+    strokeStyle: 'transparent', // 테두리 색상
+  }
+});
+
 
 // 중력이 모이는 가운에 원 만들기
 const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
@@ -102,7 +103,7 @@ const ex3 = Bodies.circle(150, 30, 20, {  // x좌표 : 200, y좌표 : 500, radiu
 });
 scoreElement.textContent = `Score: ${gamescore}`;
 timerElement.textContent = `Timer: ${timer}`;
-World.add(world, [centerGravity,ex1,ex2,ex3]); //[centerGravity, 계속 추가 가능]
+World.add(world, [centerGravity,ex1,ex2,ex3, circle]); //[centerGravity, 계속 추가 가능]
 
 //타이머
 const countdown = setInterval(() => {
@@ -123,9 +124,8 @@ let isDragging = false;  // 행성 드래그
 let isShooting = false;  // 행성 쏘기
 
 const createPlanet = () => {
-  let index = Math.floor(Math.random() * 4);  // 0~2까지 랜덤으로 행성 생성
-  // let index = 7;
-  let planet = PLANETS[index];  // index에는 0~1까지 들어감
+  let index = Math.floor(Math.random() * 4); // 행성 인덱스
+  let planet = PLANETS[index];
 
   shootingPlanet = Bodies.circle(200, 300, planet.radius, {
     index: index,
@@ -214,41 +214,77 @@ window.addEventListener('mousedown', (event) => {
 // isDragging = true 일 경우만 행성이 마우스 포인트를 따라간다.
 window.addEventListener('mousemove', (event) => {
   if (isDragging) {
+    // 마우스의 새로운 위치
     const newPosition = { x: event.clientX, y: event.clientY };
 
-    Body.setPosition(shootingPlanet, {
-      x: newPosition.x,
-      y: newPosition.y
-    });
+    // 원의 중심 좌표
+    const circleCenterX = circle.position.x;
+    const circleCenterY = circle.position.y;
+
+    // 원의 반지름
+    const circleRadius = 100;
+
+    // 행성의 새로운 위치와 원의 중심 사이의 거리
+    const distanceToCircleCenter = Math.sqrt(
+      (newPosition.x - circleCenterX) ** 2 +
+      (newPosition.y - circleCenterY) ** 2
+    );
+
+    // 행성의 새로운 위치가 원의 경계를 벗어나지 않는지 확인
+    if (distanceToCircleCenter <= circleRadius) {
+      // 행성의 위치를 새로운 위치로 업데이트
+      Body.setPosition(shootingPlanet, newPosition);
+    } else {
+      // 행성의 위치를 원의 경계에 맞게 조정하여 원 안에 머무르도록 함
+      const angle = Math.atan2(newPosition.y - circleCenterY, newPosition.x - circleCenterX);
+      const x = circleCenterX + circleRadius * Math.cos(angle);
+      const y = circleCenterY + circleRadius * Math.sin(angle);
+      Body.setPosition(shootingPlanet, { x, y });
+    }
   }
 });
+
 
 // 마우스를 떼면 isDragging = false로 한다.
 window.addEventListener('mouseup', (event) => {
   if (isDragging) {
     isShooting = true;  // 드래깅했을 때 슈팅을 true로 한다.
   } else {
-    return;  // 밑에 코드가 실행되지 않음
+    return;  // 드래그 중이 아니라면 코드 실행 중지
   }
 
-  // 마우스를 놓는 위치
-  const releasePosition = {
-    x: event.clientX,
-    y: event.clientY
+  // 원의 중심 좌표
+  const circleCenterX = circle.position.x;
+  const circleCenterY = circle.position.y;
+
+  // 행성의 현재 위치
+  const shootingPlanetX = shootingPlanet.position.x;
+  const shootingPlanetY = shootingPlanet.position.y;
+
+  // 행성과 원 중심 사이의 거리 계산
+  const distanceX = shootingPlanetX - circleCenterX;
+  const distanceY = shootingPlanetY - circleCenterY;
+  const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+  // 행성을 발사할 위치 (원의 중심 방향)
+  const shootingPosition = {
+    x: shootingPlanetX - (distanceX / distance) * shootingPlanet.circleRadius,
+    y: shootingPlanetY - (distanceY / distance) * shootingPlanet.circleRadius
   };
 
-  // 힘이 작용하는 방향
+  // 행성의 고정 해제
+  Body.setStatic(shootingPlanet, false);
+
+  // 행성을 원의 중심 방향으로 발사하기 위한 힘의 방향 계산
   const forceDirection = {
-    x: 200 - releasePosition.x,
-    y: 300 - releasePosition.y
+    x: circleCenterX - shootingPosition.x,
+    y: circleCenterY - shootingPosition.y
   };
-
-  Body.setStatic(shootingPlanet, false);  // 고정 해제
 
   // 힘을 작용시키는 applyForce 함수
-  Body.applyForce(shootingPlanet, shootingPlanet.position, {
-    x: forceDirection.x * 0.0005,  // 뒤에 수치는 힘의 크기 설정
-    y: forceDirection.y * 0.0005  // 뒤에 수치는 힘의 크기 설정
+  Body.applyForce(shootingPlanet, shootingPosition, {
+    x: forceDirection.x * 0.0008,  // 뒤에 수치는 힘의 크기 설정
+    y: forceDirection.y * 0.0008  // 뒤에 수치는 힘의 크기 설정
   });
 
   isDragging = false;
@@ -258,6 +294,8 @@ window.addEventListener('mouseup', (event) => {
     createPlanet();
   }, 2500);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
 });
+
+
 
 
 // 만유인력의 법칙
@@ -286,10 +324,12 @@ Events.on(engine, 'collisionStart', (event) => {
       (textureB === './rocket.png' && collision.bodyA !== centerGravity) ||
       (textureA === './rocket.png' && collision.bodyB !== ex1) &&
       (textureA === './rocket.png' && collision.bodyB !== ex2) &&
-      (textureA === './rocket.png' && collision.bodyB !== ex3)
+      (textureA === './rocket.png' && collision.bodyB !== ex3) 
       
     ) {
-      World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
+      if (collision.bodyA !== circle && collision.bodyB !== circle) {
+        World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
+      } // 충돌한 두 물체 제거
     } else {
       // 충돌한 두 물체의 인덱스가 같은 경우에만 다음 행성을 생성하여 추가합니다.
       if (collision.bodyA.index === collision.bodyB.index) {
