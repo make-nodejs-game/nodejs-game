@@ -171,8 +171,7 @@ const startGame = () => {
   let isShooting = false;  // 행성 쏘기
 
   const createPlanet = () => {
-    // let index = Math.floor(Math.random() * 4); // 행성 인덱스
-    let index = 4;
+    let index = Math.floor(Math.random() * 4); // 행성 인덱스
     let planet = PLANETS[index];
 
     shootingPlanet = Bodies.circle(600, 540, planet.radius, {
