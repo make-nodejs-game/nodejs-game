@@ -279,6 +279,8 @@ const startGame = () => {
         Body.setPosition(shootingPlanet, { x, y });
       }
     }
+
+
   });
 
   // 행성마다 힘의 크기
@@ -294,7 +296,6 @@ const startGame = () => {
       return;  // 드래그 중이 아니라면 코드 실행 중지
     }
 
-    // 효과음 재생
 
     // 원의 중심 좌표
     const circleCenterX = circle.position.x;
@@ -315,8 +316,10 @@ const startGame = () => {
       isShooting = false;
       return
     }
+    // 효과음 재생
     shootingSound.play();
 
+    
     // 행성을 발사할 위치 (원의 중심 방향)
     const shootingPosition = {
       x: shootingPlanetX - (distanceX / distance) * shootingPlanet.circleRadius,
