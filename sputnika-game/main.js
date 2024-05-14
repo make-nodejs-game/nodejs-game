@@ -295,7 +295,6 @@ const startGame = () => {
     }
 
     // 효과음 재생
-    shootingSound.play();
 
     // 원의 중심 좌표
     const circleCenterX = circle.position.x;
@@ -309,6 +308,14 @@ const startGame = () => {
     const distanceX = shootingPlanetX - circleCenterX;
     const distanceY = shootingPlanetY - circleCenterY;
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+    if(distance==0){
+      
+      isDragging = false;
+      isShooting = false;
+      return
+    }
+    shootingSound.play();
 
     // 행성을 발사할 위치 (원의 중심 방향)
     const shootingPosition = {
