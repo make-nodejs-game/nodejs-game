@@ -21,8 +21,8 @@ const render = Render.create({
   engine: engine,  // 게임 엔진
   // 게임의 화면 크기
   options: {  
-    width: 1000,  
-    height: 600,
+    width: 1990,  
+    height: 1010,
     wireframes: false,
     background: './space.png',
   }
@@ -34,18 +34,18 @@ Runner.run(engine);  // 엔진 실행
 const scoreElement = document.createElement('div');
 scoreElement.style.position = 'absolute';
 scoreElement.style.top = '10px';
-scoreElement.style.left = '700px';
+scoreElement.style.left = '1300px';
 scoreElement.style.color = 'white';
-scoreElement.style.fontSize = '20px';
+scoreElement.style.fontSize = '50px';
 scoreElement.style.fontWeight = 'bold';
 document.body.appendChild(scoreElement);
 
 const timerElement = document.createElement('div');
 timerElement.style.position = 'absolute';
 timerElement.style.top = '10px';
-timerElement.style.left = '900px';
+timerElement.style.left = '1600px';
 timerElement.style.color = 'white';
-timerElement.style.fontSize = '20px';
+timerElement.style.fontSize = '50px';
 timerElement.style.fontWeight = 'bold';
 document.body.appendChild(timerElement);
 
@@ -62,11 +62,7 @@ document.body.appendChild(startImage);
 // 오디오 엘리먼트 생성
 const buttonSound = new Audio('start_button.mp3');
 
-startImage.style.transition = 'transform 0.3s'; // 변환에 대한 전환 효과 설정
 
-// 마우스가 이미지 위에 있을 때 크기 조정
-startImage.addEventListener('mouseenter', () => {
-  startImage.style.transform = 'scale(1.2)'; // 1.2배 확대
 });
 
 // 마우스가 이미지를 벗어날 때 원래 크기로 복원
@@ -100,35 +96,6 @@ const startGame = () => {
     }
   });
 
-  // 남은 로켓의 개수를 표시 기능
-  const ex1 = Bodies.circle(50, 30, 20, {  // x좌표 : 100, y좌표 : 500, radius(반지름) : 20
-    isStatic: true,  // 움직이지 않도록 고정
-    // isSensor: true, // 충돌 감지만 가능하도록 설정
-    angle: Math.PI / 4,  // 45도 회전
-    render: {  // 그리기
-      sprite: {
-        texture: 'rocket.png'  // 로켓 이미지 경로
-      }
-    }
-  });
-  const ex2 = Bodies.circle(100, 30, 20, {  // x좌표 : 150, y좌표 : 500, radius(반지름) : 20
-    isStatic: true,  // 움직이지 않도록 고정
-    // isSensor: true, // 충돌 감지만 가능하도록 설정
-    angle: Math.PI / 4,  // 45도 회전
-    render: {  // 그리기
-      sprite: {
-        texture: 'rocket.png'  // 로켓 이미지 경로
-      }
-    }
-  });
-  const ex3 = Bodies.circle(150, 30, 20, {  // x좌표 : 200, y좌표 : 500, radius(반지름) : 20
-    isStatic: true,  // 움직이지 않도록 고정
-    // isSensor: true, // 충돌 감지만 가능하도록 설정
-    angle: Math.PI / 4,  // 45도 회전
-    render: {  // 그리기
-      sprite: {
-        texture: 'rocket.png'  // 로켓 이미지 경로
-      }
     }
   });
   scoreElement.textContent = `Score: ${gamescore}`;
@@ -167,12 +134,6 @@ const startGame = () => {
     World.add(world, shootingPlanet);
   };
 
-
-  const createRocket = () => {
-    
-    // 기존 행성이 있으면 제거합니다.
-    if (shootingPlanet) {
-      World.remove(world, shootingPlanet);
     }
 
     let index = 1;  // 0~1까지 랜덤으로 행성 생성
@@ -241,38 +202,6 @@ const startGame = () => {
     }
   });
 
-  // isDragging = true 일 경우만 행성이 마우스 포인트를 따라간다.
-  window.addEventListener('mousemove', (event) => {
-    if (isDragging) {
-      // 마우스의 새로운 위치
-      const newPosition = { x: event.clientX, y: event.clientY };
-
-      // 원의 중심 좌표
-      const circleCenterX = circle.position.x;
-      const circleCenterY = circle.position.y;
-
-      // 원의 반지름
-      const circleRadius = 100;
-
-      // 행성의 새로운 위치와 원의 중심 사이의 거리
-      const distanceToCircleCenter = Math.sqrt(
-        (newPosition.x - circleCenterX) ** 2 +
-        (newPosition.y - circleCenterY) ** 2
-      );
-
-      // 행성의 새로운 위치가 원의 경계를 벗어나지 않는지 확인
-      if (distanceToCircleCenter <= circleRadius) {
-        // 행성의 위치를 새로운 위치로 업데이트
-        Body.setPosition(shootingPlanet, newPosition);
-      } else {
-        // 행성의 위치를 원의 경계에 맞게 조정하여 원 안에 머무르도록 함
-        const angle = Math.atan2(newPosition.y - circleCenterY, newPosition.x - circleCenterX);
-        const x = circleCenterX + circleRadius * Math.cos(angle);
-        const y = circleCenterY + circleRadius * Math.sin(angle);
-        Body.setPosition(shootingPlanet, { x, y });
-      }
-    }
-  });
 
   // 행성마다 힘의 크기
   const forceMultiplier = [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01];
