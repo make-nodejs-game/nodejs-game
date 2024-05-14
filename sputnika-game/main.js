@@ -6,6 +6,13 @@ import { PLANETS } from "./planets";
 const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
+let gamescore = 0; //게임스코어
+let timer = 60; // 초기 제한시간
+
+let fust = false;
+let sacund = false;
+let serd = false;
+
 engine.gravity.scale = 0;  // 중력의 크기
 
 // 게임 화면 그리기
@@ -14,8 +21,8 @@ const render = Render.create({
   engine: engine,  // 게임 엔진
   // 게임의 화면 크기
   options: {  
-    width: 1000,  
-    height: 600,
+    width: 1990,  
+    height: 1010,
     wireframes: false,
   }
 });
@@ -23,8 +30,28 @@ const render = Render.create({
 Render.run(render);  // 렌더 실행
 Runner.run(engine);  // 엔진 실행
 
+const scoreElement = document.createElement('div');
+scoreElement.style.position = 'absolute';
+scoreElement.style.top = '10px';
+scoreElement.style.left = '1300px';
+scoreElement.style.color = 'white';
+scoreElement.style.fontSize = '50px';
+scoreElement.style.fontWeight = 'bold';
+document.body.appendChild(scoreElement);
+
+const timerElement = document.createElement('div');
+timerElement.style.position = 'absolute';
+timerElement.style.top = '10px';
+timerElement.style.left = '1600px';
+timerElement.style.color = 'white';
+timerElement.style.fontSize = '50px';
+timerElement.style.fontWeight = 'bold';
+document.body.appendChild(timerElement);
+
+
+
 // 중력이 모이는 가운에 원 만들기
-const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
+const centerGravity = Bodies.circle(1420, 500, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
   isStatic: true,  // 움직이지 않도록 고정
   // isSensor: true, // 충돌 감지만 가능하도록 설정
   render: {  // 그리기
@@ -44,8 +71,20 @@ const ex = Bodies.circle(100, 500, 20, {  // x좌표 : 700, y좌표 : 300, radiu
   }
 });
 
+scoreElement.textContent = `Score: ${gamescore}`;
+timerElement.textContent = `Timer: ${timer}`; 
 World.add(world, [centerGravity,ex]); //[centerGravity, 계속 추가 가능]
+//타이머
+const countdown = setInterval(() => {
+  timer--;  // 타이머 시간 감소
+  timerElement.textContent = `Timer: ${timer}`;  // 화면에 타이머 표시
 
+  // 타이머가 0이 되면 타이머 종료
+  if (timer === 0) {
+    alert("게임오버");
+    clearInterval(countdown);
+  }
+}, 1000);
 
 // 행성 생성하기
 
@@ -54,10 +93,11 @@ let isDragging = false;  // 행성 드래그
 let isShooting = false;  // 행성 쏘기
 
 const createPlanet = () => {
-  let index = Math.floor(Math.random() * 2);  // 0~2까지 랜덤으로 행성 생성
+  // let index = Math.floor(Math.random() * 2);  // 0~2까지 랜덤으로 행성 생성
+  let index = 1;
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
-  shootingPlanet = Bodies.circle(200, 300, planet.radius, {
+  shootingPlanet = Bodies.circle(400, 500, planet.radius, {
     index: index,
     isStatic: true,  // 행성 고정
     render: {
@@ -78,7 +118,7 @@ const createRocket = () => {
   let index = Math.floor(Math.random() * 1);  // 0~1까지 랜덤으로 행성 생성
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
-  shootingPlanet = Bodies.circle(200, 300, planet.radius, {
+  shootingPlanet = Bodies.circle(400, 500, planet.radius, {
     index: index,
     isStatic: true,  // 행성 고정
     render: {
@@ -146,8 +186,8 @@ window.addEventListener('mouseup', (event) => {
 
   // 힘이 작용하는 방향
   const forceDirection = {
-    x: 200 - releasePosition.x,
-    y: 300 - releasePosition.y
+    x: 400 - releasePosition.x,
+    y: 500 - releasePosition.y
   };
 
   Body.setStatic(shootingPlanet, false);  // 고정 해제
@@ -166,9 +206,7 @@ window.addEventListener('mouseup', (event) => {
   }, 2500);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
 });
 
-
 // 만유인력의 법칙
-
 Events.on(engine, 'beforeUpdate', (event) => {
   const bodies = Composite.allBodies(world);
 
@@ -195,11 +233,62 @@ Events.on(engine, 'collisionStart', (event) => {
       // 충돌한 두 물체의 인덱스가 같은 경우에만 다음 행성을 생성하여 추가합니다.
       if (collision.bodyA.index === collision.bodyB.index) {
         const index = collision.bodyA.index;
+        //행성이 합쳐질때 인덱스에 다라 점수를 추가
+        switch (collision.bodyA.index){
+          case 0:
+            gamescore += 1
+            break
+          case 1:
+            gamescore += 3
+            break
+          case 2:
+            gamescore += 6
+            break
+          case 3:
+            gamescore += 10   
+            break 
+          case 4:
+            gamescore += 15
+            break
+          case 5:
+            gamescore += 21
+            break
+          case 6:
+            gamescore += 28
+            break
+          case 7:
+            gamescore += 36  
+            break 
+          case 8:
+            gamescore += 45  
+            break
+        }
+        scoreElement.textContent = `Score: ${gamescore}`;// 업데이트 스코어
+
 
         if (index === PLANETS.length - 1) {
           return;
         }
         World.remove(world, [collision.bodyA, collision.bodyB]);
+        if (fust==false){
+          if (gamescore>=100){
+            fust=true;
+            timer+=30
+          }
+          
+        }
+        if (sacund==false){
+          if (sacund>=200){
+            fust=true;
+            timer+=20
+          }
+        }
+        if (serd==false){
+          if (serd>=300){
+            fust=true;
+            timer+=10
+          }
+        }
 
         const newPlanet = PLANETS[index + 1];
 
@@ -220,4 +309,5 @@ Events.on(engine, 'collisionStart', (event) => {
     }
   });
 });
+
 createPlanet();
