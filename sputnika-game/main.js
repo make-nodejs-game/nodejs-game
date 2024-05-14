@@ -196,7 +196,7 @@ const startGame = () => {
     let index = 1;  // 0~1까지 랜덤으로 행성 생성
     let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
-    shootingPlanet = Bodies.circle(400, 500, planet.radius, {
+    shootingPlanet = Bodies.circle(600, 540, planet.radius, {
       index: index,
       isStatic: true,  // 행성 고정
       render: {
@@ -395,7 +395,7 @@ const startGame = () => {
         (textureA === './rocket.png' && collision.bodyB !== ex3) 
         
       ) {
-        if (collision.bodyA !== circle && collision.bodyB !== circle) {
+        if ((collision.bodyA !== circle && collision.bodyB !== circle) && (collision.bodyA !== circle2 && collision.bodyB !== circle2)) {
           World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
         } // 충돌한 두 물체 제거
       } else {
