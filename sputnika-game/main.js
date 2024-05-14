@@ -33,8 +33,8 @@ Runner.run(engine);  // 엔진 실행
 
 const scoreElement = document.createElement('div');
 scoreElement.style.position = 'absolute';
-scoreElement.style.top = '10px';
-scoreElement.style.left = '1300px';
+scoreElement.style.top = '30px';
+scoreElement.style.left = '1450px';
 scoreElement.style.color = 'white';
 scoreElement.style.fontSize = '50px';
 scoreElement.style.fontWeight = 'bold';
@@ -42,8 +42,8 @@ document.body.appendChild(scoreElement);
 
 const timerElement = document.createElement('div');
 timerElement.style.position = 'absolute';
-timerElement.style.top = '10px';
-timerElement.style.left = '1600px';
+timerElement.style.top = '30px';
+timerElement.style.left = '1700px';
 timerElement.style.color = 'white';
 timerElement.style.fontSize = '50px';
 timerElement.style.fontWeight = 'bold';
@@ -102,33 +102,39 @@ const startGame = () => {
   });
 
   // 남은 로켓의 개수를 표시 기능
-  const ex1 = Bodies.circle(50, 30, 20, {  // x좌표 : 100, y좌표 : 500, radius(반지름) : 20
+  const ex1 = Bodies.circle(75, 50, 20, {  // x좌표 : 100, y좌표 : 500, radius(반지름) : 20
     isStatic: true,  // 움직이지 않도록 고정
     // isSensor: true, // 충돌 감지만 가능하도록 설정
     angle: Math.PI / 4,  // 45도 회전
     render: {  // 그리기
       sprite: {
-        texture: 'rocket.png'  // 로켓 이미지 경로
+        texture: 'rocket.png',  // 로켓 이미지 경로
+        xScale: 1.5,
+        yScale : 1.5
       }
     }
   });
-  const ex2 = Bodies.circle(100, 30, 20, {  // x좌표 : 150, y좌표 : 500, radius(반지름) : 20
+  const ex2 = Bodies.circle(150, 50, 20, {  // x좌표 : 150, y좌표 : 500, radius(반지름) : 20
     isStatic: true,  // 움직이지 않도록 고정
     // isSensor: true, // 충돌 감지만 가능하도록 설정
     angle: Math.PI / 4,  // 45도 회전
     render: {  // 그리기
       sprite: {
-        texture: 'rocket.png'  // 로켓 이미지 경로
+        texture: 'rocket.png',  // 로켓 이미지 경로
+        xScale: 1.5,
+        yScale : 1.5
       }
     }
   });
-  const ex3 = Bodies.circle(150, 30, 20, {  // x좌표 : 200, y좌표 : 500, radius(반지름) : 20
+  const ex3 = Bodies.circle(225, 50, 20, {  // x좌표 : 200, y좌표 : 500, radius(반지름) : 20
     isStatic: true,  // 움직이지 않도록 고정
     // isSensor: true, // 충돌 감지만 가능하도록 설정
     angle: Math.PI / 4,  // 45도 회전
     render: {  // 그리기
       sprite: {
-        texture: 'rocket.png'  // 로켓 이미지 경로
+        texture: 'rocket.png',  // 로켓 이미지 경로
+        xScale: 1.5,
+        yScale : 1.5
       }
     }
   });
