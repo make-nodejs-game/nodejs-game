@@ -21,8 +21,8 @@ const render = Render.create({
   engine: engine,  // 게임 엔진
   // 게임의 화면 크기
   options: {  
-    width: 1990,  
-    height: 1010,
+    width: 1980,  
+    height: 1080,
     wireframes: false,
     background: './space.png',
   }
@@ -33,8 +33,8 @@ Runner.run(engine);  // 엔진 실행
 
 const scoreElement = document.createElement('div');
 scoreElement.style.position = 'absolute';
-scoreElement.style.top = '30px';
-scoreElement.style.left = '1450px';
+scoreElement.style.top = '900px';
+scoreElement.style.left = '40px';
 scoreElement.style.color = 'white';
 scoreElement.style.fontSize = '50px';
 scoreElement.style.fontWeight = 'bold';
@@ -53,8 +53,8 @@ document.body.appendChild(timerElement);
 const startImage = new Image(); // 시작 이미지 생성
 startImage.src = 'start_image.png'; // 이미지 경로 지정
 startImage.style.position = 'absolute';
-startImage.style.top = '400px'; // 이미지의 상단 위치를 300px로 설정
-startImage.style.left = '915px'; // 이미지의 좌측 위치를 500px로 설정
+startImage.style.top = '450px'; // 이미지의 상단 위치를 300px로 설정
+startImage.style.left = '850px'; // 이미지의 좌측 위치를 500px로 설정
 startImage.style.width = '200px'; // 이미지의 가로 길이
 startImage.style.height = 'auto'; // 이미지의 세로 길이를 가로 길이에 맞춤
 startImage.style.cursor = 'pointer';
@@ -80,7 +80,17 @@ startImage.addEventListener('click', () => {
   startGame(); // 게임 시작 함수 호출
   buttonSound.play();
 });
-const circle = Bodies.circle(400, 500, 100, {
+
+const circle = Bodies.circle(600, 540, 150, {
+  isStatic: true,
+  isSensor: true,
+  render: {
+    fillStyle: 'rgba(255, 255, 255, 0.2)', // 투명도 조절
+    strokeStyle: 'transparent', // 테두리 색상
+  }
+});
+
+const circle2 = Bodies.circle(1350, 540, 380, {
   isStatic: true,
   isSensor: true,
   render: {
@@ -91,7 +101,7 @@ const circle = Bodies.circle(400, 500, 100, {
 
 const startGame = () => {
   // 중력이 모이는 가운에 원 만들기
-  const centerGravity = Bodies.circle(1420, 500, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
+  const centerGravity = Bodies.circle(1350, 540, 40, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
     isStatic: true,  // 움직이지 않도록 고정
     // isSensor: true, // 충돌 감지만 가능하도록 설정
     render: {  // 그리기
@@ -140,7 +150,7 @@ const startGame = () => {
   });
   scoreElement.textContent = `Score: ${gamescore}`;
   timerElement.textContent = `Timer: ${timer}`;
-  World.add(world, [centerGravity,ex1,ex2,ex3, circle]); //[centerGravity, 계속 추가 가능]
+  World.add(world, [centerGravity,ex1,ex2,ex3, circle, circle2]); //[centerGravity, 계속 추가 가능]
 
   //타이머
   const countdown = setInterval(() => {
@@ -161,10 +171,11 @@ const startGame = () => {
   let isShooting = false;  // 행성 쏘기
 
   const createPlanet = () => {
-    let index = Math.floor(Math.random() * 4); // 행성 인덱스
+    // let index = Math.floor(Math.random() * 4); // 행성 인덱스
+    let index = 4;
     let planet = PLANETS[index];
 
-    shootingPlanet = Bodies.circle(400, 500, planet.radius, {
+    shootingPlanet = Bodies.circle(600, 540, planet.radius, {
       index: index,
       isStatic: true,  // 행성 고정
       render: {
@@ -259,7 +270,7 @@ const startGame = () => {
       const circleCenterY = circle.position.y;
 
       // 원의 반지름
-      const circleRadius = 100;
+      const circleRadius = 150;
 
       // 행성의 새로운 위치와 원의 중심 사이의 거리
       const distanceToCircleCenter = Math.sqrt(
@@ -282,7 +293,7 @@ const startGame = () => {
   });
 
   // 행성마다 힘의 크기
-  const forceMultiplier = [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01];
+  const forceMultiplier = [0.00075, 0.0013, 0.0027, 0.004, 0.0077];
   // 오디오 엘리먼트 생성
   const shootingSound = new Audio('shooting_sound.mp3');
 
