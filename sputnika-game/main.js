@@ -60,6 +60,18 @@ startImage.style.height = 'auto'; // 이미지의 세로 길이를 가로 길이
 startImage.style.cursor = 'pointer';
 document.body.appendChild(startImage);
 
+const gameOverImage = new Image();  // 게임 오버 이미지
+gameOverImage.src = 'game_over.png';
+gameOverImage.style.position = 'absolute';
+gameOverImage.style.top = '450px';
+gameOverImage.style.left = '850px';
+gameOverImage.style.width = '200px';
+gameOverImage.style.height = 'auto';
+gameOverImage.style.display = 'none'; // 이미지를 처음에는 숨깁니다.
+document.body.appendChild(gameOverImage); // 이미지를 body에 추가합니다.
+
+
+
 // 오디오 엘리먼트 생성
 const buttonSound = new Audio('start_button.mp3');
 
@@ -159,8 +171,13 @@ const startGame = () => {
 
     // 타이머가 0이 되면 타이머 종료
     if (timer === 0) {
-      alert("게임오버");
       clearInterval(countdown);
+
+      // 게임 오버 이미지 표시
+      gameOverImage.style.display = 'block';
+
+      // 마지막 점수 표시
+      scoreElement.textContent = `Final Score: ${gamescore}`;
     }
   }, 1000);
 
