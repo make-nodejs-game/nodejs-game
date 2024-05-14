@@ -21,8 +21,8 @@ const render = Render.create({
   engine: engine,  // 게임 엔진
   // 게임의 화면 크기
   options: {  
-    width: 1000,  
-    height: 600,
+    width: 1990,  
+    height: 1010,
     wireframes: false,
   }
 });
@@ -33,25 +33,25 @@ Runner.run(engine);  // 엔진 실행
 const scoreElement = document.createElement('div');
 scoreElement.style.position = 'absolute';
 scoreElement.style.top = '10px';
-scoreElement.style.left = '700px';
+scoreElement.style.left = '1300px';
 scoreElement.style.color = 'white';
-scoreElement.style.fontSize = '20px';
+scoreElement.style.fontSize = '50px';
 scoreElement.style.fontWeight = 'bold';
 document.body.appendChild(scoreElement);
 
 const timerElement = document.createElement('div');
 timerElement.style.position = 'absolute';
 timerElement.style.top = '10px';
-timerElement.style.left = '900px';
+timerElement.style.left = '1600px';
 timerElement.style.color = 'white';
-timerElement.style.fontSize = '20px';
+timerElement.style.fontSize = '50px';
 timerElement.style.fontWeight = 'bold';
 document.body.appendChild(timerElement);
 
 
 
 // 중력이 모이는 가운에 원 만들기
-const centerGravity = Bodies.circle(700, 300, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
+const centerGravity = Bodies.circle(1420, 500, 30, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
   isStatic: true,  // 움직이지 않도록 고정
   // isSensor: true, // 충돌 감지만 가능하도록 설정
   render: {  // 그리기
@@ -97,7 +97,7 @@ const createPlanet = () => {
   let index = 1;
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
-  shootingPlanet = Bodies.circle(200, 300, planet.radius, {
+  shootingPlanet = Bodies.circle(400, 500, planet.radius, {
     index: index,
     isStatic: true,  // 행성 고정
     render: {
@@ -118,7 +118,7 @@ const createRocket = () => {
   let index = Math.floor(Math.random() * 1);  // 0~1까지 랜덤으로 행성 생성
   let planet = PLANETS[index];  // index에는 0~1까지 들어감
 
-  shootingPlanet = Bodies.circle(200, 300, planet.radius, {
+  shootingPlanet = Bodies.circle(400, 500, planet.radius, {
     index: index,
     isStatic: true,  // 행성 고정
     render: {
@@ -186,8 +186,8 @@ window.addEventListener('mouseup', (event) => {
 
   // 힘이 작용하는 방향
   const forceDirection = {
-    x: 200 - releasePosition.x,
-    y: 300 - releasePosition.y
+    x: 400 - releasePosition.x,
+    y: 500 - releasePosition.y
   };
 
   Body.setStatic(shootingPlanet, false);  // 고정 해제
