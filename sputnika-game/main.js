@@ -7,7 +7,7 @@ const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
-let timer = 60; // 초기 제한시간
+let timer = 1800; // 초기 제한시간
 
 let fust = false;
 let sacund = false;
@@ -393,9 +393,13 @@ const startGame = () => {
       const distanceSquared = dx * dx + dy * dy;
       const forceMagnitude = 0.3 * body.mass / distanceSquared;
 
-      Body.applyForce(body, body.position, {x: forceMagnitude * dx, y: forceMagnitude * dy});
-    })
+      // 만유인력에 작용하는 힘의 크기를 증가시킵니다.
+      const increasedForceMagnitude = forceMagnitude * 2; // 기존 힘의 크기에 2를 곱하여 증가시킵니다.
+
+      Body.applyForce(body, body.position, { x: increasedForceMagnitude * dx, y: increasedForceMagnitude * dy });
+    });
   });
+
 
   Events.on(engine, 'collisionStart', (event) => {
     event.pairs.forEach((collision) => {
