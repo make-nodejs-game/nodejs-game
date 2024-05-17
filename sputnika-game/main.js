@@ -325,36 +325,42 @@ const startGame = () => {
   // isDragging = true 일 경우만 행성이 마우스 포인트를 따라간다.
   window.addEventListener('mousemove', (event) => {
     if (isDragging) {
-      // 마우스의 새로운 위치
-      const newPosition = { x: event.clientX, y: event.clientY };
+        // 마우스의 새로운 위치
+        const newPosition = { x: event.clientX, y: event.clientY };
 
-      // 원의 중심 좌표
-      const circleCenterX = circle.position.x;
-      const circleCenterY = circle.position.y;
+        // 원의 중심 좌표
+        const circleCenterX = circle.position.x;
+        const circleCenterY = circle.position.y;
 
-      // 원의 반지름
-      const circleRadius = 150;
+        // 원의 반지름
+        const circleRadius = 150;
 
-      // 행성의 새로운 위치와 원의 중심 사이의 거리
-      const distanceToCircleCenter = Math.sqrt(
-        (newPosition.x - circleCenterX) ** 2 +
-        (newPosition.y - circleCenterY) ** 2
-      );
+        // 왼쪽 반원 내에서만 움직이도록 제한
+        if (newPosition.x <= circleCenterX) {
+            // 마우스와 원의 중심 사이의 거리 계산
+            const distanceToCircleCenter = Math.sqrt(
+                (newPosition.x - circleCenterX) ** 2 +
+                (newPosition.y - circleCenterY) ** 2
+            );
 
-      // 행성의 새로운 위치가 원의 경계를 벗어나지 않는지 확인
-      if (distanceToCircleCenter <= circleRadius) {
-        // 행성의 위치를 새로운 위치로 업데이트
-        Body.setPosition(shootingPlanet, newPosition);
-      } else {
-        // 행성의 위치를 원의 경계에 맞게 조정하여 원 안에 머무르도록 함
-        const angle = Math.atan2(newPosition.y - circleCenterY, newPosition.x - circleCenterX);
-        const x = circleCenterX + circleRadius * Math.cos(angle);
-        const y = circleCenterY + circleRadius * Math.sin(angle);
-        Body.setPosition(shootingPlanet, { x, y });
-      }
+            // 행성의 위치를 새로운 위치로 업데이트
+            if (distanceToCircleCenter <= circleRadius) {
+                Body.setPosition(shootingPlanet, newPosition);
+            } else {
+                // 행성의 위치를 원의 경계에 맞게 조정하여 원 안에 머무르도록 함
+                const angle = Math.atan2(newPosition.y - circleCenterY, newPosition.x - circleCenterX);
+                const x = circleCenterX + circleRadius * Math.cos(angle);
+                const y = circleCenterY + circleRadius * Math.sin(angle);
+                Body.setPosition(shootingPlanet, { x, y });
+            }
+        } else {
+            // 마우스가 원의 중심보다 오른쪽에 있는 경우
+            // x 좌표는 원의 중심 x 좌표로 고정
+            // y 좌표는 원의 중심 기준으로 최대 150 이동
+            const clampedY = Math.min(Math.max(newPosition.y, circleCenterY - circleRadius), circleCenterY + circleRadius);
+            Body.setPosition(shootingPlanet, { x: circleCenterX, y: clampedY });
+        }
     }
-
-
   });
 
   // 행성마다 힘의 크기
@@ -365,9 +371,27 @@ const startGame = () => {
   // 마우스를 떼면 isDragging = false로 한다.
   window.addEventListener('mouseup', (event) => {
     if (isDragging) {
-      isShooting = true;  // 드래깅했을 때 슈팅을 true로 한다.
+      // 마우스 커서를 숨기고 지정된 위치로 이동한 것처럼 보이게 함
+      document.body.style.cursor = 'none';
+      const fakeCursor = document.createElement('div');
+      fakeCursor.style.position = 'absolute';
+      fakeCursor.style.width = '10px';
+      fakeCursor.style.height = '10px';
+      fakeCursor.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+      fakeCursor.style.borderRadius = '50%';
+      fakeCursor.style.pointerEvents = 'none';
+      fakeCursor.style.left = '600px';
+      fakeCursor.style.top = '540px';
+      document.body.appendChild(fakeCursor);
+
+      isShooting = true;
+  
+      setTimeout(() => {
+        document.body.style.cursor = 'default';
+        document.body.removeChild(fakeCursor);
+      }, 1250);
     } else {
-      return;  // 드래그 중이 아니라면 코드 실행 중지
+      return;
     }
 
 
