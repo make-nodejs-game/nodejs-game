@@ -7,7 +7,7 @@ const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
-let timer = 1800; // 초기 제한시간
+let timer = 10; // 초기 제한시간
 
 let fust = false;
 let sacund = false;
@@ -74,6 +74,9 @@ document.body.appendChild(gameOverImage); // 이미지를 body에 추가합니�
 
 // 오디오 엘리먼트 생성
 const buttonSound = new Audio('start_button.mp3');
+const bgm = new Audio('background_music.mp3'); // 배경 음악 추가
+bgm.loop = true; // 배경 음악을 반복 재생
+bgm.volume = 0.3;
 
 startImage.style.transition = 'transform 0.3s'; // 변환에 대한 전환 효과 설정
 
@@ -91,6 +94,7 @@ startImage.addEventListener('click', () => {
   startImage.style.display = 'none'; // 시작 이미지 숨김
   startGame(); // 게임 시작 함수 호출
   buttonSound.play();
+  bgm.play();
 });
 
 const circle = Bodies.circle(600, 540, 150, {
@@ -172,12 +176,10 @@ const startGame = () => {
     // 타이머가 0이 되면 타이머 종료
     if (timer === 0) {
       clearInterval(countdown);
-
-      // 게임 오버 이미지 표시
-      gameOverImage.style.display = 'block';
-
-      // 마지막 점수 표시
-      scoreElement.textContent = `Final Score: ${gamescore}`;
+      bgm.pause();
+      bgm.currentTime = 0;
+      alert(`Game Over! Your Final Score: ${gamescore}`);
+      window.location.reload();
     }
   }, 1000);
 
@@ -502,6 +504,3 @@ const startGame = () => {
 
   createPlanet();
 };
-
-
-
