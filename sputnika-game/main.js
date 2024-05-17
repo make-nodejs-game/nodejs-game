@@ -7,7 +7,9 @@ const engine = Engine.create();  // 물리 엔진 정의
 const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
-let timer = 60; // 초기 제한시간
+let timer = 180; // 초기 제한시간
+let practimer = 30;
+
 
 let fust = false;
 let sacund = false;
