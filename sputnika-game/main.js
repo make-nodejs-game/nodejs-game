@@ -8,7 +8,7 @@ const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
 let timer = 180; // 초기 제한시간
-let practimer = 20;
+let practimer = 30;
 
 let fust = false;
 let sacund = false;
