@@ -8,8 +8,9 @@ const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
 let timer = 180; // 초기 제한시간
-let practimer = 30;
+let practimer = 30; // 연습모드 제한시간
 
+// 일정 기준 점수 넘었을 때의 시간 추가를 위한 변수
 let fust = false;
 let sacund = false;
 let serd = false;
@@ -32,6 +33,7 @@ const render = Render.create({
 Render.run(render);  // 렌더 실행
 Runner.run(engine);  // 엔진 실행
 
+// 점수 표시 요소 생성 및 스타일 설정
 const scoreElement = document.createElement('div');
 scoreElement.style.position = 'absolute';
 scoreElement.style.top = '900px';
@@ -41,6 +43,7 @@ scoreElement.style.fontSize = '50px';
 scoreElement.style.fontWeight = 'bold';
 document.body.appendChild(scoreElement);
 
+// 타이머 표시 요소 생성 및 스타일 설정
 const timerElement = document.createElement('div');
 timerElement.style.position = 'absolute';
 timerElement.style.top = '30px';
@@ -50,38 +53,38 @@ timerElement.style.fontSize = '50px';
 timerElement.style.fontWeight = 'bold';
 document.body.appendChild(timerElement);
 
-
-const startImage = new Image(); // 시작 이미지 생성
-startImage.src = 'start_image.png'; // 이미지 경로 지정
+// 시작 이미지 생성 및 스타일 설정
+const startImage = new Image();
+startImage.src = 'start_image.png';
 startImage.style.position = 'absolute';
 startImage.style.top = '200px'
 startImage.style.left = '750px';
-startImage.style.width = '400px'; // 이미지의 가로 길이
-startImage.style.height = 'auto'; // 이미지의 세로 길이를 가로 길이에 맞춤
+startImage.style.width = '400px';
+startImage.style.height = 'auto';
 startImage.style.cursor = 'pointer';
 document.body.appendChild(startImage);
 
-const pracImage = new Image(); // 시작 이미지 생성
-pracImage.src = 'prac_image.png'; // 이미지 경로 지정
+// 연습 모드 이미지 생성 및 스타일 설정
+const pracImage = new Image(); 
+pracImage.src = 'prac_image.png'; 
 pracImage.style.position = 'absolute';
-pracImage.style.top = '500px'; // 이미지의 상단 위치를 300px로 설정
-pracImage.style.left = '750px'; // 이미지의 좌측 위치를 500px로 설정
-pracImage.style.width = '400px'; // 이미지의 가로 길이
-pracImage.style.height = 'auto'; // 이미지의 세로 길이를 가로 길이에 맞춤
+pracImage.style.top = '500px'; 
+pracImage.style.left = '750px'; 
+pracImage.style.width = '400px'; 
+pracImage.style.height = 'auto'; 
 pracImage.style.cursor = 'pointer';
 document.body.appendChild(pracImage);
 
-const gameOverImage = new Image();  // 게임 오버 이미지
+// 게임 오버 이미지 생성 및 초기 숨김 처리
+const gameOverImage = new Image();
 gameOverImage.src = 'game_over.png';
 gameOverImage.style.position = 'absolute';
 gameOverImage.style.top = '450px';
 gameOverImage.style.left = '850px';
 gameOverImage.style.width = '200px';
 gameOverImage.style.height = 'auto';
-gameOverImage.style.display = 'none'; // 이미지를 처음에는 숨깁니다.
-document.body.appendChild(gameOverImage); // 이미지를 body에 추가합니다.
-
-
+gameOverImage.style.display = 'none'; 
+document.body.appendChild(gameOverImage); 
 
 // 오디오 엘리먼트 생성
 const buttonSound = new Audio('start_button.mp3');
@@ -91,6 +94,15 @@ bgm.volume = 0.3;
 
 startImage.style.transition = 'transform 0.3s'; // 변환에 대한 전환 효과 설정
 pracImage.style.transition = 'transform 0.3s'; // 변환에 대한 전환 효과 설정
+
+// 시작 이미지 클릭 이벤트
+startImage.addEventListener('click', () => {
+  startImage.style.display = 'none'; // 시작 이미지 숨김
+  pracImage.style.display = 'none'; // 시작 이미지 숨김
+  startGame(); // 게임 시작 함수 호출
+  buttonSound.play();
+  bgm.play();
+});
 
 // 마우스가 이미지 위에 있을 때 크기 조정
 startImage.addEventListener('mouseenter', () => {
@@ -102,10 +114,11 @@ startImage.addEventListener('mouseleave', () => {
   startImage.style.transform = 'scale(1)'; // 원래 크기로 복원
 });
 
-startImage.addEventListener('click', () => {
-  startImage.style.display = 'none'; // 시작 이미지 숨김
+// 연습 모드 이미지 클릭 이벤트
+pracImage.addEventListener('click', () => {
   pracImage.style.display = 'none'; // 시작 이미지 숨김
-  startGame(); // 게임 시작 함수 호출
+  startImage.style.display = 'none'; // 시작 이미지 숨김
+  pracGame(); // 게임 시작 함수 호출
   buttonSound.play();
   bgm.play();
 });
@@ -120,14 +133,7 @@ pracImage.addEventListener('mouseleave', () => {
   pracImage.style.transform = 'scale(1)'; // 원래 크기로 복원
 });
 
-pracImage.addEventListener('click', () => {
-  pracImage.style.display = 'none'; // 시작 이미지 숨김
-  startImage.style.display = 'none'; // 시작 이미지 숨김
-  pracGame(); // 게임 시작 함수 호출
-  buttonSound.play();
-  bgm.play();
-});
-
+// 중력의 중심 역할을 하는 원형 몸체
 const circle = Bodies.circle(600, 540, 150, {
   isStatic: true,
   isSensor: true,
@@ -137,6 +143,7 @@ const circle = Bodies.circle(600, 540, 150, {
   }
 });
 
+// 두 번째 원형 몸체 생성
 const circle2 = Bodies.circle(1350, 540, 380, {
   isStatic: true,
   isSensor: true,
@@ -163,7 +170,7 @@ const startGame = () => {
     }
   });
 
-  // 이미지 요소 생성
+  // 로켓 이미지 생성
   const ex1 = new Image();
   ex1.src = 'rocket.png';
   ex1.alt = 'Rocket 1';
@@ -211,6 +218,7 @@ const startGame = () => {
   document.body.appendChild(ex2);
   document.body.appendChild(ex3);
 
+  // 점수 및 타이머 초기화
   scoreElement.textContent = `Score: ${gamescore}`;
   timerElement.textContent = `Timer: ${timer}`;
   World.add(world, [centerGravity,ex1,ex2,ex3, circle, circle2]); //[centerGravity, 계속 추가 가능]
@@ -240,7 +248,7 @@ const startGame = () => {
   let isShooting = false;  // 행성 쏘기
 
   const createPlanet = () => {
-    let index = Math.floor(Math.random() * 4); // 행성 인덱스
+    let index = Math.floor(Math.random() * 5); // 행성 인덱스
     let planet = PLANETS[index];
 
     shootingPlanet = Bodies.circle(600, 540, planet.radius, {
@@ -361,7 +369,7 @@ const startGame = () => {
       fakeCursor.style.backgroundColor = 'rgnb(0,0,0,0)';
       fakeCursor.style.borderRadius = '50%';
       fakeCursor.style.pointerEvents = 'none';
-      fakeCursor.style.left = '600px';
+      fakeCursor.style.left = '600px'; 
       fakeCursor.style.top = '540px';
       document.body.appendChild(fakeCursor);
 
@@ -448,7 +456,6 @@ const startGame = () => {
       Body.applyForce(body, body.position, { x: increasedForceMagnitude * dx, y: increasedForceMagnitude * dy });
     });
   });
-
 
   Events.on(engine, 'collisionStart', (event) => {
     event.pairs.forEach((collision) => {
@@ -563,7 +570,7 @@ const startGame = () => {
         }
       }
       // 보너스 시간 추가
-      if (!fust && gamescore >= 10) {
+      if (!fust && gamescore >= 600) {
         fust = true;
         timer += 30;
         timeSound.play();
@@ -930,23 +937,6 @@ const pracGame = () => {
         }
         scoreElement.textContent = `Score: ${gamescore}`;  // 업데이트 스코어
         World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
-        
-        // 보너스 시간 추가
-        if (!fust && gamescore >= 100) {
-          fust = true;
-          practimer += 30;
-          timeSound.play();
-        }
-        if (!sacund && gamescore >= 200) {
-          sacund = true;
-          practimer += 20;
-          timeSound.play();
-        }
-        if (!serd && gamescore >= 300) {
-          serd = true;
-          practimer += 10;
-          timeSound.play();
-        }
 
         // 로켓과 행성이 충돌했을 때 효과음 재생
         const shootingSound = new Audio('boom_short.mp3'); // 효과음 추가
@@ -997,23 +987,6 @@ const pracGame = () => {
           const mergeSound = new Audio('merge_sound.mp3'); // 합쳐질 때 재생될 효과음 파일 경로
           mergeSound.play(); // 효과음 재생
   
-          // 보너스 시간 추가
-          if (!fust && gamescore >= 100) {
-            fust = true;
-            practimer += 30;
-            timeSound.play();
-          }
-          if (!sacund && gamescore >= 200) {
-            sacund = true;
-            practimer += 20;
-            timeSound.play();
-          }
-          if (!serd && gamescore >= 300) {
-            serd = true;
-            practimer += 10;
-            timeSound.play();
-          }
-  
           const newPlanet = PLANETS[index + 1];
           const newBody = Bodies.circle(
             collision.collision.supports[0].x,
@@ -1029,6 +1002,22 @@ const pracGame = () => {
   
           World.add(world, newBody);
         }
+      }
+      // 보너스 시간 추가
+      if (!fust && gamescore >= 600) {
+        fust = true;
+        practimer += 30;
+        timeSound.play();
+      }
+      if (!sacund && gamescore >= 1000) {
+        sacund = true;
+        practimer += 30;
+        timeSound.play();
+      }
+      if (!serd && gamescore >= 1500) {
+        serd = true;
+        practimer += 60;
+        timeSound.play();
       }
     });
   });
