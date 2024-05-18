@@ -454,7 +454,8 @@ const startGame = () => {
     event.pairs.forEach((collision) => {
       const textureA = collision.bodyA.render.sprite.texture;  // bodyA의 텍스처
       const textureB = collision.bodyB.render.sprite.texture;  // bodyB의 텍스처
-  
+      const timeSound = new Audio('time.mp3'); // 합쳐질 때 재생될 효과음 파일 경로
+
       // rocket.png와의 충돌을 확인하는 조건
       const isRocketCollision = (
         (textureA === './rocket.png' && collision.bodyB !== centerGravity && collision.bodyB !== ex1 && collision.bodyB !== ex2 && collision.bodyB !== ex3 && collision.bodyB !== circle && collision.bodyB !== circle2) ||
@@ -545,20 +546,6 @@ const startGame = () => {
           const mergeSound = new Audio('merge_sound.mp3'); // 합쳐질 때 재생될 효과음 파일 경로
           mergeSound.play(); // 효과음 재생
   
-          // 보너스 시간 추가
-          if (!fust && gamescore >= 1) {
-            fust = true;
-            timer += 30;
-          }
-          if (!sacund && gamescore >= 200) {
-            sacund = true;
-            timer += 20;
-          }
-          if (!serd && gamescore >= 300) {
-            serd = true;
-            timer += 10;
-          }
-  
           const newPlanet = PLANETS[index + 1];
           const newBody = Bodies.circle(
             collision.collision.supports[0].x,
@@ -574,6 +561,22 @@ const startGame = () => {
   
           World.add(world, newBody);
         }
+      }
+      // 보너스 시간 추가
+      if (!fust && gamescore >= 10) {
+        fust = true;
+        timer += 30;
+        timeSound.play();
+      }
+      if (!sacund && gamescore >= 1000) {
+        sacund = true;
+        timer += 30;
+        timeSound.play();
+      }
+      if (!serd && gamescore >= 1500) {
+        serd = true;
+        timer += 60;
+        timeSound.play();
       }
     });
   });
@@ -885,6 +888,7 @@ const pracGame = () => {
     event.pairs.forEach((collision) => {
       const textureA = collision.bodyA.render.sprite.texture;  // bodyA의 텍스처
       const textureB = collision.bodyB.render.sprite.texture;  // bodyB의 텍스처
+      const timeSound = new Audio('time.mp3'); // 합쳐질 때 재생될 효과음 파일 경로
   
       // rocket.png와의 충돌을 확인하는 조건
       const isRocketCollision = (
@@ -926,6 +930,23 @@ const pracGame = () => {
         }
         scoreElement.textContent = `Score: ${gamescore}`;  // 업데이트 스코어
         World.remove(world, [collision.bodyA, collision.bodyB]);  // 충돌한 두 물체 제거
+        
+        // 보너스 시간 추가
+        if (!fust && gamescore >= 100) {
+          fust = true;
+          practimer += 30;
+          timeSound.play();
+        }
+        if (!sacund && gamescore >= 200) {
+          sacund = true;
+          practimer += 20;
+          timeSound.play();
+        }
+        if (!serd && gamescore >= 300) {
+          serd = true;
+          practimer += 10;
+          timeSound.play();
+        }
 
         // 로켓과 행성이 충돌했을 때 효과음 재생
         const shootingSound = new Audio('boom_short.mp3'); // 효과음 추가
@@ -980,14 +1001,17 @@ const pracGame = () => {
           if (!fust && gamescore >= 100) {
             fust = true;
             practimer += 30;
+            timeSound.play();
           }
           if (!sacund && gamescore >= 200) {
             sacund = true;
             practimer += 20;
+            timeSound.play();
           }
           if (!serd && gamescore >= 300) {
             serd = true;
             practimer += 10;
+            timeSound.play();
           }
   
           const newPlanet = PLANETS[index + 1];
