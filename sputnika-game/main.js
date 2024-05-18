@@ -670,6 +670,7 @@ const pracGame = () => {
       bgm.currentTime = 0;
       console.log('score : ', gamescore);
       alert(`게임 오버!!\n 총 스코어 : ${gamescore}`);
+      location.reload();
     }
     
     practimer--;  // 타이머 시간 감소
