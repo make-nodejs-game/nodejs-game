@@ -8,7 +8,7 @@ const world = engine.world;  // 환경 조성
 
 let gamescore = 0; //게임스코어
 let timer = 180; // 초기 제한시간
-let practimer = 5;
+let practimer = 30;
 
 let fust = false;
 let sacund = false;
@@ -146,6 +146,11 @@ const circle2 = Bodies.circle(1350, 540, 380, {
   }
 });
 
+// 더블클릭 이벤트를 무시하는 함수
+function disableDoubleClick(event) {
+  event.preventDefault();
+}
+
 const startGame = () => {
   // 중력이 모이는 가운에 원 만들기
   const centerGravity = Bodies.circle(1350, 540, 40, {  // x좌표 : 700, y좌표 : 300, radius(반지름) : 30
@@ -220,8 +225,8 @@ const startGame = () => {
       clearInterval(countdown);
       bgm.pause();
       bgm.currentTime = 0;
+      console.log('score : ', gamescore);
       alert(`게임 오버!!\n 총 스코어 : ${gamescore}`);
-      window.location.reload();
     }
     
     timer--;  // 타이머 시간 감소
@@ -272,6 +277,9 @@ const startGame = () => {
     });
     World.add(world, shootingPlanet);
   };
+
+  // 더블클릭 이벤트 방지
+  window.addEventListener('dblclick', disableDoubleClick);
 
   // 행성 간의 거리 측정
   window.addEventListener('mousedown', (event) => {
@@ -350,7 +358,7 @@ const startGame = () => {
       fakeCursor.style.position = 'absolute';
       fakeCursor.style.width = '10px';
       fakeCursor.style.height = '10px';
-      fakeCursor.style.backgroundColor = 'red';
+      fakeCursor.style.backgroundColor = 'rgnb(0,0,0,0)';
       fakeCursor.style.borderRadius = '50%';
       fakeCursor.style.pointerEvents = 'none';
       fakeCursor.style.left = '600px';
@@ -538,7 +546,7 @@ const startGame = () => {
           mergeSound.play(); // 효과음 재생
   
           // 보너스 시간 추가
-          if (!fust && gamescore >= 100) {
+          if (!fust && gamescore >= 1) {
             fust = true;
             timer += 30;
           }
@@ -650,8 +658,8 @@ const pracGame = () => {
       clearInterval(countdown);
       bgm.pause();
       bgm.currentTime = 0;
+      console.log('score : ', gamescore);
       alert(`게임 오버!!\n 총 스코어 : ${gamescore}`);
-      window.location.reload();
     }
     
     practimer--;  // 타이머 시간 감소
