@@ -260,7 +260,7 @@ const startGame = () => {
     });
     World.add(world, shootingPlanet);
   };
-
+  
   const createRocket = () => {
     
     // shootingPlanet 객체가 600, 540 위치에 있는지 확인하는 함수
