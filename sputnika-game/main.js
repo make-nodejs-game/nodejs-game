@@ -10,6 +10,7 @@ let gamescore = 0; //게임스코어
 let timer = 180; // 초기 제한시간
 let practimer = 30; // 연습모드 제한시간
 
+
 // 일정 기준 점수 넘었을 때의 시간 추가를 위한 변수
 let fust = false;
 let sacund = false;
@@ -88,12 +89,8 @@ document.body.appendChild(gameOverImage);
 
 // 오디오 엘리먼트 생성
 const buttonSound = new Audio('start_button.mp3');
-const bgm = new Audio('background_music.mp3'); // 배경 음악 추가
-bgm.loop = true; // 배경 음악을 반복 재생
-bgm.volume = 0.3;
 
 startImage.style.transition = 'transform 0.3s'; // 변환에 대한 전환 효과 설정
-pracImage.style.transition = 'transform 0.3s'; // 변환에 대한 전환 효과 설정
 
 // 시작 이미지 클릭 이벤트
 startImage.addEventListener('click', () => {
@@ -134,6 +131,7 @@ pracImage.addEventListener('mouseleave', () => {
 });
 
 // 중력의 중심 역할을 하는 원형 몸체
+
 const circle = Bodies.circle(600, 540, 150, {
   isStatic: true,
   isSensor: true,
@@ -227,6 +225,9 @@ const startGame = () => {
 
   //타이머
   const countdown = setInterval(() => {
+    timer--;  // 타이머 시간 감소
+    timerElement.textContent = `Timer: ${timer}`;  // 화면에 타이머 표시
+
     // 타이머가 0이 되면 타이머 종료
     if (timer === 0) {
       gameOverSound.play(); // 효과음 재생
@@ -235,10 +236,8 @@ const startGame = () => {
       bgm.currentTime = 0;
       console.log('score : ', gamescore);
       alert(`게임 오버!!\n 총 스코어 : ${gamescore}`);
+
     }
-    
-    timer--;  // 타이머 시간 감소
-    timerElement.textContent = `Timer: ${timer}`;  // 화면에 타이머 표시
   }, 1000);
 
   // 행성 생성하기
@@ -288,6 +287,7 @@ const startGame = () => {
 
   // 더블클릭 이벤트 방지
   window.addEventListener('dblclick', disableDoubleClick);
+
 
   // 행성 간의 거리 측정
   window.addEventListener('mousedown', (event) => {
@@ -435,8 +435,11 @@ const startGame = () => {
 
     setTimeout(() => {
       createPlanet();
-    }, 1250);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
+    }, 1000);  // 몇 초 뒤에 행성이 다시 생성되는지 시간 설정
   });
+
+
+
 
   // 만유인력의 법칙
   Events.on(engine, 'beforeUpdate', (event) => {
@@ -449,11 +452,8 @@ const startGame = () => {
       const distanceSquared = dx * dx + dy * dy;
       const forceMagnitude = 0.3 * body.mass / distanceSquared;
 
-      // 만유인력에 작용하는 힘의 크기를 증가시킵니다.
-      const increasedForceMagnitude = forceMagnitude * 2; // 기존 힘의 크기에 2를 곱하여 증가시킵니다.
-
-      Body.applyForce(body, body.position, { x: increasedForceMagnitude * dx, y: increasedForceMagnitude * dy });
-    });
+      Body.applyForce(body, body.position, {x: forceMagnitude * dx, y: forceMagnitude * dy});
+    })
   });
 
   Events.on(engine, 'collisionStart', (event) => {
@@ -506,6 +506,7 @@ const startGame = () => {
         // 로켓과 행성이 충돌했을 때 효과음 재생
         const shootingSound = new Audio('boom_short.mp3'); // 효과음 추가
         shootingSound.play(); // 효과음 재생
+
       } else {
         // 충돌한 두 물체의 인덱스가 같은 경우에만 다음 행성을 생성하여 추가합니다.
         if (collision.bodyA.index === collision.bodyB.index) {
@@ -551,6 +552,7 @@ const startGame = () => {
           // 행성이 합쳐질 때 효과음 재생
           const mergeSound = new Audio('merge_sound.mp3'); // 합쳐질 때 재생될 효과음 파일 경로
           mergeSound.play(); // 효과음 재생
+
   
           const newPlanet = PLANETS[index + 1];
           const newBody = Bodies.circle(
@@ -1024,3 +1026,5 @@ const pracGame = () => {
 
   createPlanet();
 };
+
+
