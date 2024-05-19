@@ -398,7 +398,6 @@ const startGame = () => {
     const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
     if(distance==0){
-      
       isDragging = false;
       isShooting = false;
       return
@@ -684,7 +683,7 @@ const pracGame = () => {
   let isShooting = false;  // 행성 쏘기
 
   const createPlanet = () => {
-    let index = Math.floor(Math.random() * 4); // 행성 인덱스
+    let index = Math.floor(Math.random() * 5); // 행성 인덱스
     let planet = PLANETS[index];
 
     shootingPlanet = Bodies.circle(600, 540, planet.radius, {
